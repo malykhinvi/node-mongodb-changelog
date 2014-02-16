@@ -4,12 +4,12 @@ Liquibase inspired mongodb changelog tool for [node](http://nodejs.org/).
 
 ##Features
 Currently supported:
-- sync changeset functions.
+- changeset functions synchronous processing,
+- changeset's modifications monitoring,
 
 Planned:
-- sync changeset files,
-- changeset's modifications monitoring,
-- async changesets (for long migrations).
+- changeset files synchronous processing,
+- changeset asynchronous processing (for long migrations).
 
 ##Usage
 An example can be found [there](https://github.com/malykhinvi/appetit/blob/master/initDB.js#L12)
