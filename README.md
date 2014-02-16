@@ -1,6 +1,6 @@
 #Node MongoDB Changelog
 
-Liquibase inspired mongodb changelog tool for node.
+Liquibase inspired mongodb changelog tool for [node](http://nodejs.org/).
 
 ##Features
 Currently supported:
@@ -10,3 +10,6 @@ Planned:
 - sync changeset files,
 - changeset's modifications monitoring,
 - async changesets (for long migrations).
+
+##Usage
+An example can be found [there](https://github.com/malykhinvi/appetit/blob/master/initDB.js#L12)
