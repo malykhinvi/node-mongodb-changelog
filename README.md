@@ -1,6 +1,6 @@
 #Node MongoDB Changelog
 
-Liquibase inspired mongodb changelog tool for node.
+Liquibase inspired mongodb changelog tool for [node](http://nodejs.org/).
 
 ##Features
 Currently supported:
