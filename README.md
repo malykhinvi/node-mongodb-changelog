@@ -12,4 +12,4 @@ Planned:
 - changeset asynchronous processing (for long migrations).
 
 ##Usage
-An example can be found [there](https://github.com/malykhinvi/appetit/blob/master/initDB.js#L12)
+An example can be found [here](https://github.com/malykhinvi/appetit/blob/master/initDB.js#L12)
