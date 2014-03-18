@@ -6,7 +6,7 @@ function HashError(changeset, newHash) {
     Error.apply(this, arguments);
     Error.captureStackTrace(this, HashError);
 
-    this.message = 'Wrong md5sum for changeset ' + changeset._id + '. Current value is ' + newHash;
+    this.message = 'Wrong md5sum for changeset ' + changeset.name + '. Current value is ' + newHash;
 }
 util.inherits(HashError, Error);
 
