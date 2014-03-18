@@ -67,7 +67,9 @@ module.exports = function(config) {
 
             function _applyChangeset(task, callback) {
                 console.log('Applying changeset ' + task.name);
-                task.changeset(callback);
+                task.changeset(function() {
+                    callback();
+                });
             }
 
             function _saveToChangelog(task, callback) {

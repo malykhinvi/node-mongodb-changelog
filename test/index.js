@@ -54,6 +54,15 @@ describe('Changelog', function() {
                 done();
             });
         });
+
+        it('should accept any number of arguments in callback', function(done) {
+            changelog.run([
+                { name: 'third', changeset: function(cb) { console.log(1); cb(1,2,3,4); } }
+            ], function(err, executed) {
+                executed.should.have.a.lengthOf(1);
+                done(err);
+            });
+        });
     });
 });
 
