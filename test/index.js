@@ -2,16 +2,26 @@ var assert = require('assert'),
     should = require('should'),
     MongoClient = require('mongodb').MongoClient;
 
-var dbUrl = 'mongodb://localhost/dbchangelog_test';
 
-var changelog = require('../index.js')({url : dbUrl}),
-    HashError = require('../errors').HashError,
-    IllegalTaskFormat = require('../errors').IllegalTaskFormat;
+// NOTE
+// dbchangelog_test database should exist with
+// user({user: 'testUser', pwd: 'testPassword', roles: ['readWrite']})
+var dbUrl = 'mongodb://testUser:testPassword@localhost/dbchangelog_test';
+
+var loggerMock = {
+    info: function(value) {
+        console.log(value);
+    }
+};
+
+var changelog = require('../index')({url : dbUrl, logger: loggerMock }),
+    HashError = require('../error').HashError,
+    IllegalTaskFormat = require('../error').IllegalTaskFormat;
 
 
 before(function(done){
     MongoClient.connect(dbUrl, function(err, db) {
-        db.dropDatabase(done);
+        db.collection('databasechangelog').remove(done);
     });
 });
 
