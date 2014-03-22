@@ -1,8 +1,8 @@
 'use strict';
 
 var crypto = require('crypto'),
-    logger = require('logger'),
-    IllegalTaskFormat = require('error').IllegalTaskFormat;
+    logger = require('./logger'),
+    IllegalTaskFormat = require('./error').IllegalTaskFormat;
 
 function _getMD5Sum(changeset) {
     return crypto.createHash('md5').update(changeset.toString()).digest('hex');

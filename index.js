@@ -2,16 +2,16 @@
 
 var MongoClient = require('mongodb').MongoClient,
     async = require('async'),
-    HashError = require('error').HashError,
-    AlreadyAppliedError = require('error').AlreadyAppliedError,
-    Task = require('task'),
-    DatabasechangelogContext = require('context');
+    HashError = require('./error').HashError,
+    AlreadyAppliedError = require('./error').AlreadyAppliedError,
+    Task = require('./task'),
+    DatabasechangelogContext = require('./context');
 
 module.exports = function(config) {
 
     var mongo_url = config.url,
         mongo_connection_config = config.mongo_connection_config,
-        logger = require('logger').use(config.logger);
+        logger = require('./logger').use(config.logger);
 
     // Accepts array of tasks ([{name: 'taskName', changeset: functionName}])
 
