@@ -2,6 +2,8 @@
 
 Liquibase inspired mongodb changelog tool for [node](http://nodejs.org/).
 
+**NOTE: work in progress, for 0 version refer to specific [branch](https://github.com/malykhinvi/node-mongodb-changelog/tree/v0)**
+
 ##Features
 Currently supported:
 - changeset functions synchronous processing,
