@@ -7,4 +7,4 @@ const tasks = [
     require('./filePerOperation')
 ];
 
-changelog(config, tasks);
+changelog(config, tasks).then(res => console.log(res));

@@ -31,6 +31,7 @@ function runMigrations(config, tasks) {
             let status = yield* processTask(task, databasechangelog);
             result[task.name] = status;
         }
+        yield db.close();
 
         return result;
     });

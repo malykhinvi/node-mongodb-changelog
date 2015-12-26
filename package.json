@@ -28,6 +28,7 @@
   "homepage": "https://github.com/malykhinvi/node-mongodb-changelog",
   "dependencies": {
     "co": "4.6.0",
+    "kerberos": "0.0.17",
     "mongodb": "2.1.2"
   },
   "devDependencies": {
