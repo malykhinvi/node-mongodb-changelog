@@ -1,4 +1,4 @@
-const changelog = require('../src/index');
+const changelog = require('mongodb-changelog');
 
 const config = {mongoUrl: 'mongodb://localhost:27017/test'};
 const tasks = [

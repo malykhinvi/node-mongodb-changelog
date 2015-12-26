@@ -1,23 +1,27 @@
 #Node MongoDB Changelog
 
-Liquibase inspired mongodb changelog tool for [node](http://nodejs.org/).
+> Liquibase inspired mongodb migration tool for Node.js.
 
 **NOTE: work in progress, for 0 version refer to specific [branch](https://github.com/malykhinvi/node-mongodb-changelog/tree/v0)**
 
-##Features
-Currently supported:
-- changeset functions synchronous processing,
-- changeset's modifications monitoring,
-
-Planned:
-- changeset files synchronous processing,
-- changeset asynchronous processing (for long migrations).
+##Install
+```npm install mongodb-changelog```
 
 ##Usage
-An example can be found [here](https://github.com/malykhinvi/appetit/blob/master/initDB.js#L12)
+```javascript
+const changelog = require('mongodb-changelog');
 
-##Changelog
-- **0.2.2** - Added *logger* input param. Added *mongodb connection config* input param.
-- **0.1.2** - Fixed changeset callback function format (now it accepts any number of arguments).
-- **0.1.1** - Fixed changeset hash error message.
-- **0.1.0** - Initial commit.
+const config = {mongoUrl: 'mongodb://localhost:27017/test'};
+const tasks = [
+    {name: 'initDB',           operation: () => Promise.resolve(true)},
+    {name: 'addAppAdminUsers', operation: () => Promise.resolve(true)}
+];
+
+changelog(config, tasks);
+
+```
+
+##Features
+- changeset functions synchronous processing,
+- changeset modifications monitoring,
+- migrations automatic run
