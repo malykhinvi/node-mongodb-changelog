@@ -1,26 +1,24 @@
-export class HashError extends Error {
-    constructor(changeset, newHash) {
-      super(arguments);
-      super.captureStackTrace(this, HashError);
+'use strict';
 
-      this.message = `Wrong md5sum for changeset ${changeset.name}. Current value is ${newHash}`;
+class HashError extends Error {
+    constructor(task, newHash) {
+      super(arguments);
+      Error.captureStackTrace(this, HashError);
+
+      this.message = `Wrong md5sum for changeset "${task.name}". Current value is ${newHash}`;
     }
 }
 
-export class AlreadyAppliedError extends Error {
-    constructor(changeset, newHash) {
+class IllegalTaskFormat extends Error {
+    constructor() {
       super(arguments);
-      super.captureStackTrace(this, AlreadyAppliedError);
+      Error.captureStackTrace(this, IllegalTaskFormat);
 
-      this.message = `Wrong md5sum for changeset ${changeset.name}. Current value is ${newHash}`;
+      this.message = 'Wrong task format. Expected { name: "taskname", operation: function }';
     }
 }
 
-export class IllegalTaskFormat extends Error {
-    constructor(changeset, newHash) {
-      super(arguments);
-      super.captureStackTrace(this, IllegalTaskFormat);
-
-      this.message = 'Wrong task format. Expected { name: "taskname", changeset: changesetFunction }';
-    }
-}
+module.exports = {
+    HashError,
+    IllegalTaskFormat
+};
