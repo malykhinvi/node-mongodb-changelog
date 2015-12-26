@@ -4,7 +4,7 @@
   "description": "Liquibase inspired mongodb changelog tool for node.",
   "main": "src/index.js",
   "scripts": {
-    "test": "make test"
+    "test": "mocha test --reporter=list --check-leaks"
   },
   "files": [
     "src"
@@ -30,6 +30,8 @@
     "mongodb": "2.1.2"
   },
   "devDependencies": {
+    "assert": "1.3.0",
+    "mocha": "2.3.4",
     "should": "8.0.2"
   }
 }

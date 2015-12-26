@@ -17,10 +17,7 @@ function runMigrations(config, tasks) {
         }
 
         return 'OK';
-    }).then(
-        result => console.log(result),
-        error => console.error(error)
-    );
+    });
 }
 
 function* processTask(task, databasechangelog) {
