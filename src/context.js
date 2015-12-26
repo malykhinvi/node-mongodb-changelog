@@ -1,4 +1,4 @@
-export default class DatabasechangelogContext{
+export default class DatabaseChangelogContext{
   constructor(collection) {
       this.collection = collection;
   }
