@@ -11,6 +11,14 @@ const Statuses = {
     SUCCESSFULLY_APPLIED: 'SUCCESSFULLY_APPLIED'
 };
 
+/**
+ * Run migrations/tasks against database, specified by config.
+ * @param {Object} config
+ * @param {Object[]} tasks
+ * @param {string} tasks[].name - unique name of the task
+ * @param {function} tasks[].operation - function, returning yieldable value (https://github.com/tj/co#yieldables)
+ * @returns {Promise} resolved with hash (taskName: Status), or rejected with en error occurred
+ */
 function runMigrations(config, tasks) {
     return co(function* () {
         const db = yield MongoClient.connect(config.mongoUrl, config.mongoConnectionConfig);
@@ -28,6 +36,14 @@ function runMigrations(config, tasks) {
     });
 }
 
+/**
+ * Process new task. Check hash of applied tasks.
+ * @param {Object} task
+ * @param {mongodb collection} databasechangelog - changelog collection
+ * @throws {IllegalTaskFormat} task should have "name" and "operation"
+ * @throws {HashError} Already applied tasks should not be modified.
+ * @returns Status
+ */
 function* processTask(task, databasechangelog) {
     if (!isTaskValid(task)) {
         throw new IllegalTaskFormat();
