@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require('assert');
 const should = require('should');
 const MongoClient = require('mongodb').MongoClient;
@@ -9,42 +11,58 @@ const changelog = require('../src/index');
 const HashError = require('../src/error').HashError;
 const IllegalTaskFormat = require('../src/error').IllegalTaskFormat;
 
+let db;
+
+const firstOperation = () => {
+    const collection = db.collection('users');
+    return collection.insert({username: 'admin', password: 'test', isAdmin: true});
+};
+const secondOperation = () => Promise.resolve(true);
+const thirdOperation = () => Promise.reject();
 
 before(function(done) {
     co(function* () {
-        const db = yield MongoClient.connect(CONFIG.mongoUrl);
+        db = yield MongoClient.connect(CONFIG.mongoUrl);
         yield db.collection('databasechangelog').deleteMany({});
+        yield db.collection('users').deleteMany({});
     }).then(done);
 });
 
 describe('changelog(config, tasks)', function() {
+    it('should return Promise', () => {
+        changelog(CONFIG, []).should.be.an.instanceOf(Promise);
+    });
+
     it('should apply unprocessed operations', function(done) {
         changelog(CONFIG, [
-            {name: 'first', operation: () => Promise.resolve(true)},
-            {name: 'second', operation: () => Promise.resolve(true)}
+            {name: 'first', operation: firstOperation},
+            {name: 'second', operation: secondOperation}
         ]).then(function(result) {
-            result.should.be.equal('OK');
-            done();
+            result.should.have.property('first', changelog.Statuses.SUCCESSFULLY_APPLIED);
+            result.should.have.property('second', changelog.Statuses.SUCCESSFULLY_APPLIED);
+            db.collection('users').findOne({username: 'admin'}).then(user => {
+                user.should.have.property('username', 'admin');
+                user.should.have.property('password', 'test');
+                user.should.have.property('isAdmin', true);
+                done();
+            });
         });
     });
 
     it('should not apply already processed operations', function(done) {
         changelog(CONFIG, [
-            {name: 'first', operation: () => Promise.resolve(true)},
-            {name: 'second', operation: () => Promise.resolve(true)}
+            {name: 'first', operation: firstOperation},
+            {name: 'second', operation: secondOperation}
         ]).then(function(result) {
-            result.should.be.equal('OK');
+            result.should.have.property('first', changelog.Statuses.ALREADY_APPLIED);
+            result.should.have.property('second', changelog.Statuses.ALREADY_APPLIED);
             done();
         });
     });
 
     it('should reject with HashError if already applied operation hash changed', function(done) {
-        const changedOperation = () => {
-            console.log('this is a change');
-            return Promise.resolve(true);
-        };
         changelog(CONFIG, [
-            {name: 'first', operation: changedOperation}
+            {name: 'second', operation: thirdOperation}
         ]).catch((err) => {
             err.should.be.an.instanceOf(HashError);
             done();

@@ -6,17 +6,25 @@ const co = require('co');
 const IllegalTaskFormat = require('./error').IllegalTaskFormat;
 const HashError = require('./error').HashError;
 
+const Statuses = {
+    ALREADY_APPLIED: 'ALREADY_APPLIED',
+    SUCCESSFULLY_APPLIED: 'SUCCESSFULLY_APPLIED'
+};
+
 function runMigrations(config, tasks) {
     return co(function* () {
         const db = yield MongoClient.connect(config.mongoUrl, config.mongoConnectionConfig);
         const databasechangelog = db.collection('databasechangelog');
         yield databasechangelog.createIndex({name: 1}, {unique: true});
 
+        const result = {};
         for (let i = 0; i < tasks.length; i++) {
-            yield* processTask(tasks[i], databasechangelog)
+            const task = tasks[i];
+            let status = yield* processTask(task, databasechangelog);
+            result[task.name] = status;
         }
 
-        return 'OK';
+        return result;
     });
 }
 
@@ -27,11 +35,12 @@ function* processTask(task, databasechangelog) {
 
     const storedTask = yield databasechangelog.findOne({name: task.name});
     const md5sum = getMD5Sum(task);
+    let status;
     if (storedTask) {
         if (storedTask.md5sum !== md5sum) {
             throw new HashError(task, md5sum);
         } else {
-            console.log(`${task.name} has been already applied`);
+            status = Statuses.ALREADY_APPLIED;
         }
     } else {
         yield task.operation();
@@ -40,9 +49,10 @@ function* processTask(task, databasechangelog) {
             dateExecuted: new Date(),
             md5sum: md5sum
         };
-        yield databasechangelog.insert(appliedChange)
+        yield databasechangelog.insert(appliedChange);
+        status = Statuses.SUCCESSFULLY_APPLIED;
     }
-
+    return status;
 }
 
 function isTaskValid(task) {
@@ -54,3 +64,4 @@ function getMD5Sum(task) {
 }
 
 module.exports = runMigrations;
+module.exports.Statuses = Statuses;
