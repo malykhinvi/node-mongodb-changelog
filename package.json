@@ -1,6 +1,6 @@
 {
   "name": "mongodb-changelog",
-  "version": "1.0.0",
+  "version": "1.0.0-beta",
   "description": "Liquibase inspired mongodb changelog tool for node.",
   "main": "src/index.js",
   "scripts": {
