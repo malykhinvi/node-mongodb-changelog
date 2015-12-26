@@ -7,6 +7,7 @@
 
 ##Install
 Required Node.js 4+ since this package use generators, Promises and other ES2015(ES6) features.
+
 ```npm install mongodb-changelog```
 
 ##Usage
