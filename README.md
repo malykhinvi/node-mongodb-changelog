@@ -1,17 +1,18 @@
 [![build status](https://img.shields.io/travis/malykhinvi/node-mongodb-changelog.svg?style=flat-square)](https://travis-ci.org/malykhinvi/node-mongodb-changelog)
 [![npm version](https://img.shields.io/npm/v/mongodb-changelog.svg?style=flat-square)](https://www.npmjs.com/package/mongodb-changelog)
 
-#Node MongoDB Changelog
+# Node MongoDB Changelog
 
 > Liquibase inspired mongodb migration tool for Node.js.
 
-##Install
+## Install
 Required Node.js 8+ since this package uses generators, Promises and other ES2015(ES6) features.
+
 _For nodejs v4 see v1.0.0_
 
 ```npm install mongodb-changelog```
 
-##Usage
+## Usage
 ```javascript
 const changelog = require('mongodb-changelog');
 
@@ -29,7 +30,8 @@ Each record contains name of the task, date of applying of this task and task fu
 
 Check out tests for more examples.
 
-##Features
+## Features
 - changeset functions synchronous processing,
 - changeset modifications monitoring,
-- migrations automatic run
+- migrations automatic run,
+- async/await support
