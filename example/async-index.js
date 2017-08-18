@@ -1,4 +1,4 @@
-const changelog = require('mongodb-changelog');
+const changelog = require('../src');
 
 const config = {mongoUrl: 'mongodb://localhost:27017/test'};
 const tasks = [
@@ -7,7 +7,11 @@ const tasks = [
     require('./filePerOperation')
 ];
 
-changelog(config, tasks).then(
-    res => console.log(res),
-    err => console.error(err.message)
-);
+async function run() {
+    try {
+        console.log(await changelog(config, tasks));
+    } catch (err) {
+        console.error(err.message)
+    }
+}
+run();

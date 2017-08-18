@@ -1,9 +1,7 @@
 'use strict';
 
-const assert = require('assert');
 const should = require('should');
 const MongoClient = require('mongodb').MongoClient;
-const co = require('co');
 
 const CONFIG = {mongoUrl: 'mongodb://localhost/dbchangelog_test'};
 
@@ -20,12 +18,10 @@ const firstOperation = () => {
 const secondOperation = () => Promise.resolve(true);
 const thirdOperation = () => Promise.reject();
 
-before(function(done) {
-    co(function* () {
-        db = yield MongoClient.connect(CONFIG.mongoUrl);
-        yield db.collection('databasechangelog').deleteMany({});
-        yield db.collection('users').deleteMany({});
-    }).then(done);
+before(async function() {
+    db = await MongoClient.connect(CONFIG.mongoUrl);
+    await db.collection('databasechangelog').deleteMany({});
+    await db.collection('users').deleteMany({});
 });
 
 describe('changelog(config, tasks)', function() {
@@ -76,6 +72,21 @@ describe('changelog(config, tasks)', function() {
             err.should.be.an.instanceOf(IllegalTaskFormat);
             done();
         });
+    });
+
+    it('should work as async function', async function() {
+        const appliedTasks = await changelog(CONFIG, [
+            {name: 'asyncExample', operation: firstOperation}
+        ]);
+        appliedTasks.should.match({asyncExample: 'SUCCESSFULLY_APPLIED'});
+    });
+
+    it('should work as async function (error)', async function() {
+        try{
+            await changelog(CONFIG, [{wrongname: 'first'}]);
+        } catch (error) {
+            error.should.be.an.instanceOf(IllegalTaskFormat);
+        }
     });
 
 });

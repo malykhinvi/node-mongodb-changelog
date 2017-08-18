@@ -2,7 +2,6 @@
 
 const crypto = require('crypto');
 const MongoClient = require('mongodb').MongoClient;
-const co = require('co');
 const IllegalTaskFormat = require('./error').IllegalTaskFormat;
 const HashError = require('./error').HashError;
 
@@ -19,38 +18,35 @@ const Statuses = {
  * @param {function} tasks[].operation - function, returning yieldable value (https://github.com/tj/co#yieldables)
  * @returns {Promise} resolved with hash (taskName: Status), or rejected with en error occurred
  */
-function runMigrations(config, tasks) {
-    return co(function* () {
-        const db = yield MongoClient.connect(config.mongoUrl, config.mongoConnectionConfig);
-        const databasechangelog = db.collection('databasechangelog');
-        yield databasechangelog.createIndex({name: 1}, {unique: true});
+async function runMigrations(config, tasks) {
+    const db = await MongoClient.connect(config.mongoUrl, config.mongoConnectionConfig);
+    const changelogCollection = db.collection('databasechangelog');
+    await changelogCollection.createIndex({name: 1}, {unique: true});
 
-        const result = {};
-        for (let i = 0; i < tasks.length; i++) {
-            const task = tasks[i];
-            let status = yield* processTask(task, databasechangelog);
-            result[task.name] = status;
-        }
-        yield db.close();
+    const result = {};
+    for (let i = 0; i < tasks.length; i++) {
+        const task = tasks[i];
+        result[task.name] = await processTask(task, changelogCollection);
+    }
+    await db.close();
 
-        return result;
-    });
+    return result;
 }
 
 /**
  * Process new task. Check hash of applied tasks.
  * @param {Object} task
- * @param {mongodb collection} databasechangelog - changelog collection
+ * @param {mongodb collection} changelogCollection - changelog collection
  * @throws {IllegalTaskFormat} task should have "name" and "operation"
  * @throws {HashError} Already applied tasks should not be modified.
  * @returns Status
  */
-function* processTask(task, databasechangelog) {
+async function processTask(task, changelogCollection) {
     if (!isTaskValid(task)) {
         throw new IllegalTaskFormat();
     }
 
-    const storedTask = yield databasechangelog.findOne({name: task.name});
+    const storedTask = await changelogCollection.findOne({name: task.name});
     const md5sum = getMD5Sum(task);
     let status;
     if (storedTask) {
@@ -60,13 +56,13 @@ function* processTask(task, databasechangelog) {
             status = Statuses.ALREADY_APPLIED;
         }
     } else {
-        yield task.operation();
+        await task.operation();
         const appliedChange = {
             name: task.name,
             dateExecuted: new Date(),
             md5sum: md5sum
         };
-        yield databasechangelog.insert(appliedChange);
+        await changelogCollection.insert(appliedChange);
         status = Statuses.SUCCESSFULLY_APPLIED;
     }
     return status;
