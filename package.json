@@ -28,10 +28,10 @@
   "homepage": "https://github.com/malykhinvi/node-mongodb-changelog",
   "dependencies": {
     "kerberos": "0.0.23",
-    "mongodb": "2.2.31"
+    "mongodb": "^3.5.0"
   },
   "devDependencies": {
-    "mocha": "2.3.4",
+    "mocha": "^7.0.0",
     "should": "11.2.1"
   }
 }
