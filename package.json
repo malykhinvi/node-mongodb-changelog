@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "nyc mocha test --reporter=list --check-leaks",
-    "coverage": "nyc report --reporter=lcov | coveralls"
+    "coverage": "nyc report --reporter=lcov && cat coverage/lcov.info | coveralls"
   },
   "files": [
     "src"
