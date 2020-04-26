@@ -19,7 +19,8 @@ const Statuses = {
  * @returns {Promise} resolved with hash (taskName: Status), or rejected with en error occurred
  */
 async function runMigrations(config, tasks) {
-    const db = await MongoClient.connect(config.mongoUrl, config.mongoConnectionConfig);
+    const client = await MongoClient.connect(config.mongoUrl, config.mongoConnectionConfig);
+    const db = client.db();
     const changelogCollection = db.collection('databasechangelog');
     await changelogCollection.createIndex({name: 1}, {unique: true});
 
@@ -28,7 +29,7 @@ async function runMigrations(config, tasks) {
         const task = tasks[i];
         result[task.name] = await processTask(task, changelogCollection);
     }
-    await db.close();
+    await client.close();
 
     return result;
 }
@@ -36,7 +37,7 @@ async function runMigrations(config, tasks) {
 /**
  * Process new task. Check hash of applied tasks.
  * @param {Object} task
- * @param {mongodb collection} changelogCollection - changelog collection
+ * @param {Collection} changelogCollection - mongodb collection to store changelog in
  * @throws {IllegalTaskFormat} task should have "name" and "operation"
  * @throws {HashError} Already applied tasks should not be modified.
  * @returns Status
@@ -62,7 +63,7 @@ async function processTask(task, changelogCollection) {
             dateExecuted: new Date(),
             md5sum: md5sum
         };
-        await changelogCollection.insert(appliedChange);
+        await changelogCollection.insertOne(appliedChange);
         status = Statuses.SUCCESSFULLY_APPLIED;
     }
     return status;
