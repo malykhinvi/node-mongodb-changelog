@@ -15,8 +15,8 @@ const IllegalTaskFormat = require('../src/error').IllegalTaskFormat;
 let db;
 let client;
 
-const firstOperation = () => {
-    const collection = db.collection('users');
+const firstOperation = (database) => {
+    const collection = database.collection('users');
     return collection.insertOne({username: 'admin', password: 'test', isAdmin: true});
 };
 const secondOperation = () => Promise.resolve(true);

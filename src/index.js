@@ -28,7 +28,7 @@ async function runMigrations(config, tasks) {
 
         for (let i = 0; i < tasks.length; i++) {
             const task = tasks[i];
-            result[task.name] = await processTask(task, changelogCollection);
+            result[task.name] = await processTask(task, changelogCollection, db);
         }
     } catch (err) {
         await client.close();
@@ -42,11 +42,12 @@ async function runMigrations(config, tasks) {
  * Process new task. Check hash of applied tasks.
  * @param {Object} task
  * @param {Collection} changelogCollection - mongodb collection to store changelog in
+ * @param {Db} db - database instance
  * @throws {IllegalTaskFormat} task should have "name" and "operation"
  * @throws {HashError} Already applied tasks should not be modified.
  * @returns Status
  */
-async function processTask(task, changelogCollection) {
+async function processTask(task, changelogCollection, db) {
     if (!isTaskValid(task)) {
         throw new IllegalTaskFormat();
     }
@@ -61,7 +62,7 @@ async function processTask(task, changelogCollection) {
             status = Statuses.ALREADY_APPLIED;
         }
     } else {
-        await task.operation();
+        await task.operation(db);
         const appliedChange = {
             name: task.name,
             dateExecuted: new Date(),
