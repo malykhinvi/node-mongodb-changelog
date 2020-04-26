@@ -4,7 +4,8 @@
   "description": "Liquibase inspired mongodb changelog tool for node.",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha test --reporter=list --check-leaks"
+    "test": "nyc mocha test --reporter=list --check-leaks",
+    "coverage": "nyc report --reporter=lcov && cat coverage/lcov.info | coveralls"
   },
   "files": [
     "src"
@@ -30,7 +31,9 @@
     "mongodb": "^3.5.6"
   },
   "devDependencies": {
+    "coveralls": "^3.1.0",
     "mocha": "^7.1.2",
+    "nyc": "^15.0.1",
     "should": "^13.2.3"
   },
   "engines": {
