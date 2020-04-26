@@ -1,4 +1,5 @@
 [![build status](https://img.shields.io/travis/malykhinvi/node-mongodb-changelog.svg?style=flat-square)](https://travis-ci.org/malykhinvi/node-mongodb-changelog)
+[![Coverage Status](https://coveralls.io/repos/github/malykhinvi/node-mongodb-changelog/badge.svg?branch=master)](https://coveralls.io/github/malykhinvi/node-mongodb-changelog?branch=master)
 [![npm version](https://img.shields.io/npm/v/mongodb-changelog.svg?style=flat-square)](https://www.npmjs.com/package/mongodb-changelog)
 
 # Node MongoDB Changelog
@@ -6,9 +7,7 @@
 > Liquibase inspired mongodb migration tool for Node.js.
 
 ## Install
-Required Node.js 8+ since this package uses generators, Promises and other ES2015(ES6) features.
-
-_For nodejs v4 see v1.0.0_
+Required Node.js 10+
 
 ```npm install mongodb-changelog```
 
@@ -18,8 +17,17 @@ const changelog = require('mongodb-changelog');
 
 const config = {mongoUrl: 'mongodb://localhost:27017/test'};
 const tasks = [
-    {name: 'initDB',           operation: () => Promise.resolve(true)},
-    {name: 'addAppAdminUsers', operation: () => Promise.resolve(true)}
+    {
+        name: 'initDB',
+        operation: () => Promise.resolve(true)
+    },
+    {
+        name: 'addAppAdminUsers',
+        operation: (db) => {
+            const users = db.collection('users');
+            return users.insertOne({username: 'admin', password: 'test', isAdmin: true});
+        }
+    }
 ];
 
 changelog(config, tasks);

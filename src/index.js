@@ -19,29 +19,35 @@ const Statuses = {
  * @returns {Promise} resolved with hash (taskName: Status), or rejected with en error occurred
  */
 async function runMigrations(config, tasks) {
-    const db = await MongoClient.connect(config.mongoUrl, config.mongoConnectionConfig);
-    const changelogCollection = db.collection('databasechangelog');
-    await changelogCollection.createIndex({name: 1}, {unique: true});
-
+    const client = await MongoClient.connect(config.mongoUrl, config.mongoConnectionConfig);
     const result = {};
-    for (let i = 0; i < tasks.length; i++) {
-        const task = tasks[i];
-        result[task.name] = await processTask(task, changelogCollection);
-    }
-    await db.close();
+    try {
+        const db = client.db();
+        const changelogCollection = db.collection('databasechangelog');
+        await changelogCollection.createIndex({name: 1}, {unique: true});
 
+        for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i];
+            result[task.name] = await processTask(task, changelogCollection, db);
+        }
+    } catch (err) {
+        await client.close();
+        throw err;
+    }
+    await client.close();
     return result;
 }
 
 /**
  * Process new task. Check hash of applied tasks.
  * @param {Object} task
- * @param {mongodb collection} changelogCollection - changelog collection
+ * @param {Collection} changelogCollection - mongodb collection to store changelog in
+ * @param {Db} db - database instance
  * @throws {IllegalTaskFormat} task should have "name" and "operation"
  * @throws {HashError} Already applied tasks should not be modified.
  * @returns Status
  */
-async function processTask(task, changelogCollection) {
+async function processTask(task, changelogCollection, db) {
     if (!isTaskValid(task)) {
         throw new IllegalTaskFormat();
     }
@@ -56,13 +62,13 @@ async function processTask(task, changelogCollection) {
             status = Statuses.ALREADY_APPLIED;
         }
     } else {
-        await task.operation();
+        await task.operation(db);
         const appliedChange = {
             name: task.name,
             dateExecuted: new Date(),
             md5sum: md5sum
         };
-        await changelogCollection.insert(appliedChange);
+        await changelogCollection.insertOne(appliedChange);
         status = Statuses.SUCCESSFULLY_APPLIED;
     }
     return status;

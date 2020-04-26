@@ -3,25 +3,34 @@
 const should = require('should');
 const MongoClient = require('mongodb').MongoClient;
 
-const CONFIG = {mongoUrl: 'mongodb://localhost/dbchangelog_test'};
+const CONFIG = {
+    mongoUrl: 'mongodb://localhost/dbchangelog_test',
+    mongoConnectionConfig: {useUnifiedTopology:true}
+};
 
 const changelog = require('../src/index');
 const HashError = require('../src/error').HashError;
 const IllegalTaskFormat = require('../src/error').IllegalTaskFormat;
 
 let db;
+let client;
 
-const firstOperation = () => {
-    const collection = db.collection('users');
-    return collection.insert({username: 'admin', password: 'test', isAdmin: true});
+const firstOperation = (database) => {
+    const collection = database.collection('users');
+    return collection.insertOne({username: 'admin', password: 'test', isAdmin: true});
 };
 const secondOperation = () => Promise.resolve(true);
 const thirdOperation = () => Promise.reject();
 
 before(async function() {
-    db = await MongoClient.connect(CONFIG.mongoUrl);
+    client = await MongoClient.connect(CONFIG.mongoUrl, {useUnifiedTopology: true});
+    db = client.db();
     await db.collection('databasechangelog').deleteMany({});
     await db.collection('users').deleteMany({});
+});
+
+after(function() {
+    client.close();
 });
 
 describe('changelog(config, tasks)', function() {
@@ -88,7 +97,6 @@ describe('changelog(config, tasks)', function() {
             error.should.be.an.instanceOf(IllegalTaskFormat);
         }
     });
-
 });
 
 
