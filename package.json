@@ -30,7 +30,7 @@
     "mongodb": "^3.5.6"
   },
   "devDependencies": {
-    "mocha": "2.3.4",
-    "should": "11.2.1"
+    "mocha": "^7.1.2",
+    "should": "^13.2.3"
   }
 }

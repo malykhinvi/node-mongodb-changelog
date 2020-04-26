@@ -20,17 +20,21 @@ const Statuses = {
  */
 async function runMigrations(config, tasks) {
     const client = await MongoClient.connect(config.mongoUrl, config.mongoConnectionConfig);
-    const db = client.db();
-    const changelogCollection = db.collection('databasechangelog');
-    await changelogCollection.createIndex({name: 1}, {unique: true});
-
     const result = {};
-    for (let i = 0; i < tasks.length; i++) {
-        const task = tasks[i];
-        result[task.name] = await processTask(task, changelogCollection);
+    try {
+        const db = client.db();
+        const changelogCollection = db.collection('databasechangelog');
+        await changelogCollection.createIndex({name: 1}, {unique: true});
+
+        for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i];
+            result[task.name] = await processTask(task, changelogCollection);
+        }
+    } catch (err) {
+        await client.close();
+        throw err;
     }
     await client.close();
-
     return result;
 }
 
