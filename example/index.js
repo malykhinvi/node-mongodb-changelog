@@ -2,8 +2,13 @@ const changelog = require('mongodb-changelog');
 
 const config = {mongoUrl: 'mongodb://localhost:27017/test'};
 const tasks = [
-    {name: 'initDB',           operation: () => Promise.resolve(true)},
-    {name: 'addAppAdminUsers', operation: () => Promise.resolve(true)},
+    {
+        name: 'addAppAdminUsers',
+        operation: (db) => {
+            const users = db.collection('users');
+            return users.insertOne({username: 'admin', password: 'test', isAdmin: true});
+        }
+    },
     require('./filePerOperation')
 ];
 
