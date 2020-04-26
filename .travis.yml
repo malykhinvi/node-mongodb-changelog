@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- v8
+- v10
 services: mongodb
 deploy:
   provider: npm
