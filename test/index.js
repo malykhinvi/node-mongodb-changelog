@@ -13,6 +13,7 @@ const HashError = require('../src/error').HashError;
 const IllegalTaskFormat = require('../src/error').IllegalTaskFormat;
 
 let db;
+let client;
 
 const firstOperation = () => {
     const collection = db.collection('users');
@@ -22,10 +23,14 @@ const secondOperation = () => Promise.resolve(true);
 const thirdOperation = () => Promise.reject();
 
 before(async function() {
-    const client = await MongoClient.connect(CONFIG.mongoUrl, {useUnifiedTopology: true});
+    client = await MongoClient.connect(CONFIG.mongoUrl, {useUnifiedTopology: true});
     db = client.db();
     await db.collection('databasechangelog').deleteMany({});
     await db.collection('users').deleteMany({});
+});
+
+after(function() {
+    client.close();
 });
 
 describe('changelog(config, tasks)', function() {
@@ -92,7 +97,6 @@ describe('changelog(config, tasks)', function() {
             error.should.be.an.instanceOf(IllegalTaskFormat);
         }
     });
-
 });
 
 
