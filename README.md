@@ -1,6 +1,6 @@
-[![build status](https://img.shields.io/travis/malykhinvi/node-mongodb-changelog.svg?style=flat-square)](https://travis-ci.org/malykhinvi/node-mongodb-changelog)
+[![build status](https://img.shields.io/travis/malykhinvi/node-mongodb-changelog.svg)](https://travis-ci.org/malykhinvi/node-mongodb-changelog)
 [![Coverage Status](https://coveralls.io/repos/github/malykhinvi/node-mongodb-changelog/badge.svg?branch=master)](https://coveralls.io/github/malykhinvi/node-mongodb-changelog?branch=master)
-[![npm version](https://img.shields.io/npm/v/mongodb-changelog.svg?style=flat-square)](https://www.npmjs.com/package/mongodb-changelog)
+[![npm version](https://img.shields.io/npm/v/mongodb-changelog.svg)](https://www.npmjs.com/package/mongodb-changelog)
 
 # Node MongoDB Changelog
 
